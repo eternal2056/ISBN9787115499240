@@ -3,10 +3,10 @@
 
 
 #include <Windows.h>
-
+#include <stdio.h>
 
 // 使用 CreateRemoteThread 实现远线程注入
-BOOL CreateRemoteThreadInjectDll(DWORD dwProcessId, const wchar_t* pszDllFileName);
+BOOL CreateRemoteThreadInjectDll(DWORD dwProcessId);
 
 
 #endif

@@ -4,13 +4,13 @@
 void ShowError(const wchar_t* pszText)
 {
 	TCHAR szErr[MAX_PATH] = { 0 };
-	wsprintf(szErr, L"%s Error[%d]\n", pszText, ::GetLastError());
-	::MessageBox(NULL, szErr, L"ERROR", MB_OK);
+	wsprintf(szErr, "%s Error[%d]\n", pszText, ::GetLastError());
+	::MessageBox(NULL, szErr, "ERROR", MB_OK);
 }
 
 
 // 使用 CreateRemoteThread 实现远线程注入
-BOOL CreateRemoteThreadInjectDll(DWORD dwProcessId, const wchar_t* pszDllFileName)
+BOOL CreateRemoteThreadInjectDll(DWORD dwProcessId)
 {
 	HANDLE hProcess = NULL;
 	SIZE_T dwSize = 0;
@@ -25,7 +25,7 @@ BOOL CreateRemoteThreadInjectDll(DWORD dwProcessId, const wchar_t* pszDllFileNam
 		return FALSE;
 	}
 	// 在注入进程中申请内存
-	dwSize = 1 + ::lstrlen(pszDllFileName);
+	dwSize = 1 + ::lstrlen("C:\\D_Files\\Project_Driver\\ISBN9787115499240\\x64\\Debug\\RemoteThreadInjection_Dll.dll");
 	pDllAddr = ::VirtualAllocEx(hProcess, NULL, dwSize, MEM_COMMIT, PAGE_READWRITE);
 	if (NULL == pDllAddr)
 	{
@@ -33,18 +33,19 @@ BOOL CreateRemoteThreadInjectDll(DWORD dwProcessId, const wchar_t* pszDllFileNam
 		return FALSE;
 	}
 	// 向申请的内存中写入数据
-	if (FALSE == ::WriteProcessMemory(hProcess, pDllAddr, pszDllFileName, dwSize, NULL))
+	if (FALSE == ::WriteProcessMemory(hProcess, pDllAddr, "C:\\D_Files\\Project_Driver\\ISBN9787115499240\\x64\\Debug\\RemoteThreadInjection_Dll.dll", dwSize, NULL))
 	{
 		ShowError(L"WriteProcessMemory");
 		return FALSE;
 	}
 	// 获取LoadLibraryA函数地址
-	pFuncProcAddr = ::GetProcAddress(::GetModuleHandle(L"kernel32.dll"), "LoadLibraryA");
-	if (NULL == pFuncProcAddr)
+	pFuncProcAddr = GetProcAddress(::GetModuleHandle("kernel32.dll"), "LoadLibraryA");
+	if (pFuncProcAddr == NULL)
 	{
 		ShowError(L"GetProcAddress_LoadLibraryA");
 		return FALSE;
 	}
+
 	// 使用 CreateRemoteThread 创建远线程, 实现 DLL 注入
 	HANDLE hRemoteThread = ::CreateRemoteThread(hProcess, NULL, 0, (LPTHREAD_START_ROUTINE)pFuncProcAddr, pDllAddr, 0, NULL);
 	if (NULL == hRemoteThread)
@@ -52,7 +53,13 @@ BOOL CreateRemoteThreadInjectDll(DWORD dwProcessId, const wchar_t* pszDllFileNam
 		ShowError(L"CreateRemoteThread");
 		return FALSE;
 	}
-	// 关闭句柄
+	//WaitForSingleObject(hRemoteThread, -1);
+	//DWORD exitCode = 0;
+	//if (!GetExitCodeThread(hRemoteThread, &exitCode))
+	//	ShowError(L"GetExitCodeThread error!");
+	//// 关闭句柄
+	//printf("thread exitcode = 0x%x\n", exitCode);
+	//printf("errcode = %d\n", GetLastError());
 	::CloseHandle(hProcess);
 
 	return TRUE;

@@ -4,11 +4,11 @@
 void EP_ShowError(const wchar_t* pszText)
 {
 	TCHAR szErr[MAX_PATH] = { 0 };
-	::wsprintf(szErr, L"%s Error[%d]\n", pszText, ::GetLastError());
-	::MessageBox(NULL, szErr, L"ERROR", MB_OK);
+	::wsprintf(szErr, "%s Error[%d]\n", pszText, ::GetLastError());
+	::MessageBox(NULL, szErr, "ERROR", MB_OK);
 }
 
-BOOL EnbalePrivileges(HANDLE hProcess, const wchar_t* pszPrivilegesName)
+BOOL EnbalePrivileges(HANDLE hProcess)
 {
 	HANDLE hToken = NULL;
 	LUID luidValue = { 0 };
@@ -25,7 +25,7 @@ BOOL EnbalePrivileges(HANDLE hProcess, const wchar_t* pszPrivilegesName)
 		return FALSE;
 	}
 	// 获取本地系统的 pszPrivilegesName 特权的LUID值
-	bRet = ::LookupPrivilegeValue(NULL, pszPrivilegesName, &luidValue);
+	bRet = ::LookupPrivilegeValue(NULL, SE_DEBUG_NAME, &luidValue);
 	if (FALSE == bRet)
 	{
 		EP_ShowError(L"LookupPrivilegeValue");
@@ -36,7 +36,7 @@ BOOL EnbalePrivileges(HANDLE hProcess, const wchar_t* pszPrivilegesName)
 	tokenPrivileges.Privileges[0].Luid = luidValue;
 	tokenPrivileges.Privileges[0].Attributes = SE_PRIVILEGE_ENABLED;
 	// 提升进程令牌访问权限
-	bRet = ::AdjustTokenPrivileges(hToken, FALSE, &tokenPrivileges, 0, NULL, NULL);
+	bRet = ::AdjustTokenPrivileges(hToken, FALSE, &tokenPrivileges, sizeof(tokenPrivileges), NULL, NULL);
 	if (FALSE == bRet)
 	{
 		EP_ShowError(L"AdjustTokenPrivileges");

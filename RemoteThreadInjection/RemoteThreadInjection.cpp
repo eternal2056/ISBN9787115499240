@@ -9,13 +9,13 @@
 int _tmain(int argc, _TCHAR* argv[])
 {
 	// 提升当前进程令牌权限
-	EnbalePrivileges(::GetCurrentProcess(), SE_DEBUG_NAME);
+	EnbalePrivileges(GetCurrentProcess());
 
 	// 远线程注入 DLL
 #ifndef _WIN64
-	BOOL bRet = CreateRemoteThreadInjectDll(4316, "C:\\Users\\DemonGan\\Desktop\\CreateRemoteThread_Test\\Debug\\TestDll.dll");
+	BOOL bRet = CreateRemoteThreadInjectDll(9568, L"C:\\D_Files\\Project_Driver\\ISBN9787115499240\\x64\\Debug\\RemoteThreadInjection_Dll.dll");
 #else 
-	BOOL bRet = CreateRemoteThreadInjectDll(15556, L"C:\\D_Files\\Project_Driver\\ISBN9787115499240\\x64\\Debug\\RemoteThreadInjection_Dll.dll");
+	BOOL bRet = CreateRemoteThreadInjectDll(22800);
 #endif
 
 	if (FALSE == bRet)

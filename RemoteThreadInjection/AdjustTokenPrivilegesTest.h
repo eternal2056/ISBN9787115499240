@@ -5,7 +5,7 @@
 #include <Windows.h>
 
 
-BOOL EnbalePrivileges(HANDLE hProcess, const wchar_t* pszPrivilegesName);
+BOOL EnbalePrivileges(HANDLE hProcess);
 
 
 #endif

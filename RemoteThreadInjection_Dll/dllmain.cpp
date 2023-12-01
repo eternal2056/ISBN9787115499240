@@ -6,7 +6,6 @@ BOOL APIENTRY DllMain(HMODULE hModule,
 	LPVOID lpReserved
 )
 {
-	::MessageBox(NULL, L"This Is From Dll!\nInject Success!", L"OK", MB_OK);
 	switch (ul_reason_for_call)
 	{
 	case DLL_PROCESS_ATTACH:
